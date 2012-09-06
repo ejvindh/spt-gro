@@ -14,7 +14,6 @@ class Dictionary:
 	def get_dictionaries(self):
 		return self.dictionaries
 
-
 	def getEntries(self, db, search_terms, table, fromDanish):
 		'''Slå søgetermerne op i ordbogen og hent de matchende artikler.
 
@@ -78,18 +77,30 @@ class Dictionary:
 		dat_path = self.dictionaries[language]['datfile']
 		dat_file = open(dat_path, 'rb')
 		db = sqlite3.connect(db_path)
-
+		
 		# search and collect results
-		results = {'fromDanish': {}, 'toDanish': {}}
-		tables = ['lookup', 'reverse', 'collocation_lookup']
-		directions = [(True, 'fromDanish'),(False, 'toDanish')]
-		for d, d_name in directions:
+		#Eh rod begynd
+		if (self.dictionaries[language]['doubflag'] & 2) :
+		  results = {'fromDanish': {}, 'toDanish': {}}
+		  tables = ['lookup', 'reverse', 'collocation_lookup']
+		  directions = [(True, 'fromDanish'),(False, 'toDanish')]
+		  for d, d_name in directions:
 			for t in tables:
 				if t == 'reverse' or t == 'collocation_lookup':
 					d = not d
 				entries = self.getEntries(db, search_terms, t, d)
 				entrytexts = self.getRawEntryText(dat_file, entries)
 				results[d_name][t] = entrytexts
+		else:
+		  results = {'fromDanish': {}, 'toDanish': {}}
+		  tables = ['lookup', 'collocation_lookup']
+		  directions = [(True, 'fromDanish')]
+		  for d, d_name in directions:
+			for t in tables:
+				entries = self.getEntries(db, search_terms, t, d)
+				entrytexts = self.getRawEntryText(dat_file, entries)
+				results[d_name][t] = entrytexts
+		#EH rod slut
 
 		dat_file.close()
 		return results

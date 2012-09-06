@@ -93,7 +93,31 @@ class DictionaryGUI:
 		self.updateFlags()
 
 	def updateFlags(self):
-		language = self.get_search_result_language()
+		#EH-udkommenteret: language = self.get_search_result_language()
+		#EH-begynd
+		language = self.get_comboLanguage_language()[0]
+		global doub_prev
+		if (self.dic.dictionaries[language]['doubflag'] & 2) :
+		  self.langImage1.show()
+		  self.langImage3.show()
+		  self.langImage4.show()
+		  self.checkToDanish.show()
+		  if (doub_prev==1) :
+		    self.checkToDanish.set_active(True)
+		  doub_prev = 2
+		else :
+		  self.langImage1.hide()
+		  self.langImage3.hide()
+		  self.langImage4.hide()
+		  self.checkToDanish.set_active(False)
+		  self.checkToDanish.hide()
+		  doub_prev = 1
+		if (self.dic.dictionaries[language]['doubflag'] & 1) :
+		  self.checkReverse.show()
+		else :		  
+		  self.checkReverse.set_active(False)
+		  self.checkReverse.hide()
+		#EH-slut
 		self.langImage2.set_from_file(icon_path%language)
 		self.langImage3.set_from_file(icon_path%language)
 
@@ -135,10 +159,15 @@ class DictionaryGUI:
 		htmlview = htmltextview.HtmlTextView()
 		contents = ''
 		directions = []
-		if self.checkFromDanish.get_active():
+		#EH-begynd: Tilføjet et ekstra IF-lag på 'doubflag'
+		if self.dic.dictionaries[lang]['doubflag'] :
+		  if self.checkFromDanish.get_active():
 			directions.append(('fromDanish', 'Dansk-%s'%language_name))
-		if self.checkToDanish.get_active():
+		  if self.checkToDanish.get_active():
 			directions.append(('toDanish', '%s-Dansk'%language_name))
+		else :
+		  directions.append(('fromDanish', language_name))
+		#EH-slut
 		tables = [('lookup','Artikler')]
 		if self.checkReverse.get_active():
 			tables.append(('reverse', ''))
@@ -162,7 +191,6 @@ class DictionaryGUI:
 				            print href
 		htmlview.html_hyperlink_handler = handler
 		htmlview.display_html(contents)
-
 		htmlview.show()
 		self.txtContents.set_buffer(htmlview.get_buffer())
 
