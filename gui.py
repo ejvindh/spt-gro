@@ -96,7 +96,7 @@ class DictionaryGUI:
 		#EH-udkommenteret: language = self.get_search_result_language()
 		#EH-begynd
 		language = self.get_comboLanguage_language()[0]
-		global doub_prev
+		doub_prev = 0
 		if (self.dic.dictionaries[language]['doubflag'] & 2) :
 		  self.langImage1.show()
 		  self.langImage3.show()
